@@ -1,0 +1,1214 @@
+zz<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Алматы Места</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #e8d9b0;
+    --dark: #1a1a1a;
+    --green-dark: #3d5a2e;
+    --green-mid: #4e7a3a;
+    --green-light: #6a9e55;
+    --green-btn: #5a8445;
+    --card-bg: #5a7a40;
+    --card-inner: #6b9450;
+    --white: #f5eed8;
+    --text-dark: #2a2a2a;
+    --radius: 18px;
+    --radius-lg: 26px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ========== PAGES ========== */
+  .page { display: none; min-height: 100vh; flex-direction: column; }
+  .page.active { display: flex; }
+
+  /* ========== HEADER ========== */
+  .top-bar {
+    background: var(--dark);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .avatar-btn {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--green-mid);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .avatar-btn:hover { transform: scale(1.08); background: var(--green-light); }
+  .avatar-btn svg { width: 28px; height: 28px; fill: white; }
+
+  .search-bar {
+    flex: 1;
+    background: white;
+    border-radius: 30px;
+    padding: 12px 22px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #aaa;
+    border: none;
+    outline: none;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .search-bar:focus { box-shadow: 0 0 0 3px var(--green-light); color: var(--text-dark); }
+
+  /* ========== FILTER PILLS ========== */
+  .filter-row {
+    display: flex;
+    gap: 14px;
+    padding: 18px 20px 10px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    background: var(--green-dark);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 8px 22px;
+    border-radius: 30px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s, transform 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .pill:hover { background: var(--green-light); transform: translateY(-2px); }
+  .pill.active { background: var(--green-light); box-shadow: 0 4px 12px rgba(90,130,65,0.4); }
+
+  /* ========== GRID ========== */
+  .places-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 18px;
+    padding: 16px 20px 30px;
+  }
+
+  .place-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .place-card:hover { transform: translateY(-5px); box-shadow: 0 10px 28px rgba(0,0,0,0.2); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .place-photo {
+    background: var(--card-inner);
+    border-radius: 14px;
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .place-name {
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    text-align: center;
+  }
+  .place-meta {
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* ========== HOME BUTTON ========== */
+  .home-btn {
+    background: var(--green-dark);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 15px;
+    padding: 10px 24px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background 0.2s, transform 0.15s;
+    margin: 16px 20px;
+    align-self: flex-start;
+  }
+  .home-btn:hover { background: var(--green-light); transform: translateY(-2px); }
+
+  /* ========== LOGIN PAGE ========== */
+  #page-login {
+    align-items: center;
+    justify-content: flex-start;
+    background: var(--bg);
+  }
+
+  .login-box {
+    background: var(--green-mid);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 340px;
+    max-width: 90%;
+    margin: 40px auto 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    animation: fadeUp 0.4s ease;
+  }
+
+  .login-input {
+    background: var(--white);
+    border: none;
+    border-radius: 30px;
+    padding: 14px 20px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 16px;
+    color: #777;
+    outline: none;
+    transition: box-shadow 0.2s;
+  }
+  .login-input:focus { box-shadow: 0 0 0 3px rgba(255,255,255,0.4); color: var(--text-dark); }
+
+  .login-btn {
+    background: var(--green-light);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 2px;
+    padding: 14px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .login-btn:hover { background: var(--green-dark); transform: translateY(-2px); }
+
+  .login-note {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-dark);
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* ========== NOT ADMIN PAGE ========== */
+  #page-notadmin {
+    align-items: center;
+    justify-content: flex-start;
+    background: var(--bg);
+  }
+  .notadmin-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+    padding-bottom: 60px;
+  }
+  .notadmin-emoji { font-size: 90px; animation: bounce 1.2s infinite; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .notadmin-text {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--text-dark);
+  }
+
+  /* ========== ADMIN PANEL ========== */
+  #page-admin {
+    background: var(--bg);
+  }
+  .admin-header {
+    background: var(--dark);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .admin-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: white;
+    letter-spacing: 1px;
+  }
+  .admin-badge {
+    background: var(--green-light);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+  .admin-tabs {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px 0;
+  }
+  .admin-tab {
+    flex: 1;
+    background: var(--card-bg);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 10px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .admin-tab.active { background: var(--green-dark); border-color: var(--green-light); }
+  .admin-tab-panel { display: none; padding: 16px 20px 30px; }
+  .admin-tab-panel.active { display: block; }
+
+  .admin-you {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    color: var(--green-dark);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  /* Add place form */
+  .add-form {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .add-form-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    color: white;
+    margin-bottom: 4px;
+  }
+  .add-input {
+    background: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    outline: none;
+    transition: box-shadow 0.2s;
+  }
+  .add-input:focus { box-shadow: 0 0 0 2px var(--green-light); }
+  .add-row { display: flex; gap: 8px; }
+  .add-row .add-input { flex: 1; }
+  .add-select {
+    background: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 14px;
+    color: var(--text-dark);
+    outline: none;
+    flex: 1;
+    cursor: pointer;
+  }
+  .add-submit {
+    background: var(--green-light);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .add-submit:hover { background: var(--green-dark); }
+
+  /* Admin place list */
+  .admin-place-row {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    animation: fadeUp 0.3s ease both;
+  }
+  .admin-place-emoji { font-size: 28px; flex-shrink: 0; }
+  .admin-place-info { flex: 1; min-width: 0; }
+  .admin-place-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .admin-place-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 2px;
+  }
+  .admin-place-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-new-toggle {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .btn-new-toggle:hover { background: rgba(255,255,255,0.3); }
+  .btn-new-toggle.is-new { background: #e67e22; }
+  .btn-delete {
+    background: rgba(220,50,50,0.25);
+    color: #ff8a8a;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-delete:hover { background: rgba(220,50,50,0.5); }
+
+  /* ========== DISTRICT PAGE ========== */
+  #page-districts {
+    background: var(--bg);
+  }
+  .section-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--green-dark);
+    padding: 20px 20px 10px;
+  }
+  .districts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    padding: 0 20px 30px;
+  }
+  .district-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 22px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.4s ease both;
+  }
+  .district-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,0.2); }
+  .district-icon { font-size: 36px; margin-bottom: 8px; }
+  .district-name { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15px; color: white; }
+
+  /* ========== FILTER MODAL ========== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--bg);
+    border-radius: 28px 28px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%;
+    max-width: 520px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: var(--green-dark);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-close {
+    background: var(--card-bg);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .filter-section { margin-bottom: 20px; }
+  .filter-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--green-dark);
+    margin-bottom: 10px;
+  }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip {
+    background: var(--card-bg);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .chip:hover, .chip.selected { background: var(--green-dark); border-color: var(--green-light); transform: scale(1.05); }
+
+  .apply-btn {
+    width: 100%;
+    background: var(--green-mid);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding: 14px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s;
+  }
+  .apply-btn:hover { background: var(--green-dark); }
+
+  /* ========== PLACE DETAIL ========== */
+  #page-detail {
+    background: var(--bg);
+  }
+  .detail-photo {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+    background: var(--card-bg);
+  }
+  .detail-body { padding: 20px; }
+  .detail-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+  }
+  .detail-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tag {
+    background: var(--card-bg);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 16px;
+  }
+  .detail-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #444;
+    margin-bottom: 20px;
+  }
+  .detail-info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: var(--text-dark);
+  }
+  .info-icon { font-size: 18px; }
+
+  /* ========== SEARCH RESULTS ========== */
+  .search-input-big {
+    width: calc(100% - 40px);
+    margin: 16px 20px 0;
+    background: white;
+    border-radius: 20px;
+    padding: 14px 20px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    font-family: 'Rubik', sans-serif;
+  }
+  .search-input-big:focus { box-shadow: 0 0 0 3px var(--green-light); }
+
+  /* ========== НОВИНКИ ========== */
+  .new-badge {
+    background: #e74c3c;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 10px;
+    position: absolute;
+    top: 8px; right: 8px;
+  }
+  .place-card { position: relative; }
+
+  /* ========== BOTTOM NAV ========== */
+  .bottom-nav {
+    background: var(--dark);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0 16px;
+    margin-top: auto;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+    background: none; border: none;
+  }
+  .nav-item:hover, .nav-item.active { color: var(--green-light); }
+  .nav-icon { font-size: 22px; }
+  .nav-label { font-size: 11px; font-family: 'Nunito', sans-serif; font-weight: 700; }
+
+  /* Error shake */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .shake { animation: shake 0.3s ease; }
+
+  .page-header-bar {
+    background: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+  }
+  .page-header-bar .home-btn { margin: 0; }
+  .page-header-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 900;
+    font-size: 18px;
+    color: white;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .empty-state .big { font-size: 60px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ======================== PAGE: HOME ======================== -->
+<div class="page active" id="page-home">
+  <div class="top-bar">
+    <button class="avatar-btn" onclick="goTo('page-login')" title="Войти">
+      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+    </button>
+    <input class="search-bar" placeholder="ПОИСК" onfocus="goTo('page-search')" readonly>
+  </div>
+
+  <div class="filter-row">
+    <button class="pill" onclick="goTo('page-districts')">Алматы</button>
+    <button class="pill" onclick="goTo('page-new')">Новинки</button>
+    <button class="pill" onclick="openFilter()">Фильтр</button>
+  </div>
+
+  <div class="places-grid" id="main-grid"></div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="goTo('page-home')">
+      <span class="nav-icon">🏠</span><span class="nav-label">Главная</span>
+    </button>
+    <button class="nav-item" onclick="goTo('page-districts')">
+      <span class="nav-icon">🗺️</span><span class="nav-label">Районы</span>
+    </button>
+    <button class="nav-item" onclick="goTo('page-new')">
+      <span class="nav-icon">✨</span><span class="nav-label">Новинки</span>
+    </button>
+    <button class="nav-item" onclick="goTo('page-login')">
+      <span class="nav-icon">👤</span><span class="nav-label">Профиль</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ======================== PAGE: LOGIN ======================== -->
+<div class="page" id="page-login">
+  <div class="page-header-bar">
+    <button class="home-btn" onclick="goTo('page-home')">HOME</button>
+  </div>
+
+  <div class="login-box" id="login-box">
+    <input class="login-input" type="email" id="email-input" placeholder="e-mail">
+    <input class="login-input" type="password" id="pass-input" placeholder="пароль">
+    <button class="login-btn" onclick="doLogin()">ВХОД</button>
+  </div>
+  <p class="login-note">Только админам вход воспрещён 😉</p>
+</div>
+
+<!-- ======================== PAGE: NOT ADMIN ======================== -->
+<div class="page" id="page-notadmin">
+  <div class="page-header-bar">
+    <button class="home-btn" onclick="goTo('page-home')">HOME</button>
+  </div>
+  <div class="notadmin-content">
+    <div class="notadmin-emoji">😭</div>
+    <div class="notadmin-text">Вы не админ</div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: ADMIN ======================== -->
+<div class="page" id="page-admin">
+  <div class="admin-header">
+    <span class="admin-title">Панель управления</span>
+    <span class="admin-badge">👑 ADMIN</span>
+  </div>
+  <button class="home-btn" onclick="goTo('page-home')">HOME</button>
+
+  <div class="admin-you">Вы Админ! 🎉</div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="switchAdminTab('all')">📍 Все места</button>
+    <button class="admin-tab" onclick="switchAdminTab('new')">✨ Новинки</button>
+  </div>
+
+  <!-- TAB: ALL PLACES -->
+  <div class="admin-tab-panel active" id="admin-panel-all">
+    <div class="add-form">
+      <div class="add-form-title">➕ Добавить место</div>
+      <div class="add-row">
+        <input class="add-input" id="a-emoji" placeholder="Эмодзи 🏙️" maxlength="4" style="width:80px;flex:none">
+        <input class="add-input" id="a-name" placeholder="Название места">
+      </div>
+      <div class="add-row">
+        <select class="add-select" id="a-district">
+          <option value="">Район...</option>
+          <option>Алмалинский</option><option>Медеуский</option>
+          <option>Бостандыкский</option><option>Алатауский</option>
+          <option>Турксибский</option><option>Ауэзовский</option>
+          <option>Жетысуский</option><option>Наурызбайский</option>
+        </select>
+        <input class="add-input" id="a-hours" placeholder="Часы: 10:00–22:00">
+      </div>
+      <div class="add-row">
+        <select class="add-select" id="a-type">
+          <option value="">Тип...</option>
+          <option value="food">🍽️ Еда</option>
+          <option value="entertainment">🎭 Развлечения</option>
+          <option value="nature">🌿 Природа</option>
+          <option value="sport">🏃 Спорт</option>
+          <option value="shopping">🛍️ Шопинг</option>
+          <option value="culture">🎨 Культура</option>
+        </select>
+        <select class="add-select" id="a-time">
+          <option value="day">🌞 День</option>
+          <option value="night">🌙 Ночь</option>
+          <option value="24/7">⏰ 24/7</option>
+        </select>
+      </div>
+      <input class="add-input" id="a-desc" placeholder="Описание места...">
+      <input class="add-input" id="a-tags" placeholder="Теги через запятую: Природа, Горы">
+      <div class="add-row" style="align-items:center;gap:12px">
+        <label style="color:white;font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="a-isnew" style="width:16px;height:16px"> Новинка
+        </label>
+        <button class="add-submit" style="flex:1" onclick="adminAddPlace()">Добавить место</button>
+      </div>
+    </div>
+    <div id="admin-all-list"></div>
+  </div>
+
+  <!-- TAB: NEW PLACES -->
+  <div class="admin-tab-panel" id="admin-panel-new">
+    <p style="font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;color:#666;margin-bottom:14px">
+      Здесь отображаются только места с пометкой «Новинка». Переключить статус можно кнопкой <b>NEW</b> в любом разделе.
+    </p>
+    <div id="admin-new-list"></div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: DISTRICTS ======================== -->
+<div class="page" id="page-districts">
+  <div class="page-header-bar">
+    <button class="home-btn" onclick="goTo('page-home')">HOME</button>
+    <span class="page-header-title">Районы Алматы</span>
+  </div>
+
+  <p class="section-title">Выберите район 📍</p>
+  <div class="districts-grid" id="districts-grid"></div>
+</div>
+
+<!-- ======================== PAGE: NEW ======================== -->
+<div class="page" id="page-new">
+  <div class="page-header-bar">
+    <button class="home-btn" onclick="goTo('page-home')">HOME</button>
+    <span class="page-header-title">Новинки ✨</span>
+  </div>
+
+  <div class="places-grid" id="new-grid"></div>
+</div>
+
+<!-- ======================== PAGE: SEARCH ======================== -->
+<div class="page" id="page-search">
+  <div class="page-header-bar">
+    <button class="home-btn" onclick="goTo('page-home')">HOME</button>
+    <span class="page-header-title">Поиск</span>
+  </div>
+  <input class="search-input-big" id="search-field" placeholder="Введите название места..." oninput="doSearch(this.value)" autofocus>
+  <div class="places-grid" id="search-grid">
+    <div class="empty-state" style="grid-column:1/-1">
+      <div class="big">🔍</div>
+      Начните вводить название
+    </div>
+  </div>
+</div>
+
+<!-- ======================== PAGE: DETAIL ======================== -->
+<div class="page" id="page-detail">
+  <div class="page-header-bar">
+    <button class="home-btn" id="detail-back-btn">← Назад</button>
+  </div>
+  <div class="detail-photo" id="detail-photo"></div>
+  <div class="detail-body">
+    <div class="detail-name" id="detail-name"></div>
+    <div class="detail-tags" id="detail-tags"></div>
+    <div class="detail-desc" id="detail-desc"></div>
+    <div id="detail-info"></div>
+  </div>
+</div>
+
+<!-- ======================== FILTER MODAL ======================== -->
+<div class="modal-overlay" id="filter-modal">
+  <div class="modal-box">
+    <div class="modal-title">
+      Фильтр
+      <button class="modal-close" onclick="closeFilter()">✕</button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">👥 Количество человек</div>
+      <div class="chip-row" id="chips-people">
+        <div class="chip" onclick="selectChip(this,'people')">1</div>
+        <div class="chip" onclick="selectChip(this,'people')">2</div>
+        <div class="chip" onclick="selectChip(this,'people')">3</div>
+        <div class="chip" onclick="selectChip(this,'people')">4</div>
+        <div class="chip" onclick="selectChip(this,'people')">5+</div>
+        <div class="chip" onclick="selectChip(this,'people')">Компания</div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">🕐 Время суток</div>
+      <div class="chip-row" id="chips-time">
+        <div class="chip" onclick="selectChip(this,'time')">🌞 День</div>
+        <div class="chip" onclick="selectChip(this,'time')">🌙 Ночь</div>
+        <div class="chip" onclick="selectChip(this,'time')">⏰ 24/7</div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">🎯 Тип активности</div>
+      <div class="chip-row" id="chips-type">
+        <div class="chip" onclick="selectChip(this,'type')">🍽️ Еда</div>
+        <div class="chip" onclick="selectChip(this,'type')">🎭 Развлечения</div>
+        <div class="chip" onclick="selectChip(this,'type')">🌿 Природа</div>
+        <div class="chip" onclick="selectChip(this,'type')">🛍️ Шопинг</div>
+        <div class="chip" onclick="selectChip(this,'type')">🎨 Культура</div>
+      </div>
+    </div>
+
+    <button class="apply-btn" onclick="applyFilter()">Применить фильтр</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const places = [
+  { id:1, name:'Парк Горького', emoji:'🌳', district:'Алмалинский', tags:['Природа','День','Бесплатно'], desc:'Любимый парк алматинцев с аттракционами, прогулочными зонами и фонтанами. Идеален для семейного отдыха и прогулок.', hours:'08:00–22:00', time:'day', people:[1,2,3,4,5], type:'nature', isNew:false },
+  { id:2, name:'Медеу', emoji:'⛸️', district:'Медеуский', tags:['Спорт','День','Горы'], desc:'Высокогорный спортивный комплекс на высоте 1691 метр. Каток, горный воздух и потрясающие виды на Алматы.', hours:'09:00–21:00', time:'day', people:[1,2,3,4,5], type:'sport', isNew:false },
+  { id:3, name:'Шымбулак', emoji:'🎿', district:'Медеуский', tags:['Горы','Зима','Экстрим'], desc:'Горнолыжный курорт мирового уровня. Трассы для всех уровней подготовки, кресельные подъёмники и шикарные виды.', hours:'09:00–17:00', time:'day', people:[1,2,3,4,5], type:'sport', isNew:false },
+  { id:4, name:'Зелёный Базар', emoji:'🥦', district:'Алмалинский', tags:['Еда','День','Колорит'], desc:'Самый большой крытый рынок Алматы — изобилие свежих фруктов, овощей, специй и казахских деликатесов.', hours:'07:00–20:00', time:'day', people:[1,2,3], type:'food', isNew:false },
+  { id:5, name:'Ночной клуб Circus', emoji:'🎪', district:'Бостандыкский', tags:['Ночь','Клуб','18+'], desc:'Главный ночной клуб Алматы с топовыми диджеями, шоу-программами и незабываемой атмосферой.', hours:'22:00–06:00', time:'night', people:[3,4,5], type:'entertainment', isNew:true },
+  { id:6, name:'Кофейня Tutti', emoji:'☕', district:'Алмалинский', tags:['Еда','24/7','Кофе'], desc:'Уютная кофейня, работающая круглосуточно. Лучший кофе в городе, тихая музыка и приятная атмосфера для работы.', hours:'24/7', time:'24/7', people:[1,2], type:'food', isNew:true },
+  { id:7, name:'ЦУМ Алматы', emoji:'🛍️', district:'Алмалинский', tags:['Шопинг','День','ТЦ'], desc:'Исторический центральный универмаг, обновлённый и современный. Известные бренды, рестораны и кинотеатр.', hours:'10:00–22:00', time:'day', people:[1,2,3,4,5], type:'shopping', isNew:false },
+  { id:8, name:'Арт-галерея ArtBat', emoji:'🎨', district:'Медеуский', tags:['Культура','Искусство','Выставки'], desc:'Современное арт-пространство с постоянными и временными выставками казахстанских и международных художников.', hours:'11:00–20:00', time:'day', people:[1,2,3,4], type:'culture', isNew:true },
+  { id:9, name:'Ресторан Шорпа', emoji:'🍲', district:'Алатауский', tags:['Еда','Казахская кухня','Уют'], desc:'Аутентичный казахский ресторан с традиционными блюдами: бешбармак, куырдак, самса. Тёплая атмосфера.', hours:'11:00–23:00', time:'day', people:[2,3,4,5], type:'food', isNew:false },
+  { id:10, name:'Бар «Под луной»', emoji:'🌙', district:'Бостандыкский', tags:['Ночь','Бар','Коктейли'], desc:'Стильный бар на крыше с панорамным видом на ночной город. Авторские коктейли и живая музыка по выходным.', hours:'18:00–03:00', time:'night', people:[2,3,4,5], type:'entertainment', isNew:true },
+  { id:11, name:'Парк «Арасан»', emoji:'🏊', district:'Алмалинский', tags:['СПА','Баня','Отдых'], desc:'Знаменитые алматинские бани. Классическая русская баня, турецкий хаммам и современные СПА-процедуры.', hours:'08:00–23:00', time:'day', people:[1,2,3,4], type:'sport', isNew:false },
+  { id:12, name:'Planetarium', emoji:'🌌', district:'Турксибский', tags:['Культура','Наука','24/7'], desc:'Современный планетарий с 3D-шоу о космосе и вселенной. Уникальный опыт для всей семьи.', hours:'10:00–21:00', time:'day', people:[1,2,3,4,5], type:'culture', isNew:false },
+];
+
+const districts = [
+  { name:'Алмалинский', emoji:'🏙️', count:5 },
+  { name:'Медеуский', emoji:'🏔️', count:3 },
+  { name:'Бостандыкский', emoji:'🌲', count:2 },
+  { name:'Алатауский', emoji:'🌾', count:2 },
+  { name:'Турксибский', emoji:'🚂', count:1 },
+  { name:'Ауэзовский', emoji:'🎭', count:2 },
+  { name:'Жетысуский', emoji:'🌺', count:1 },
+  { name:'Наурызбайский', emoji:'🏕️', count:2 },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let activeFilters = { people: null, time: null, type: null };
+let currentDistrict = null;
+let previousPage = 'page-home';
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function goTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  window.scrollTo(0,0);
+  if (pageId === 'page-admin') {
+    renderAdminList('admin-all-list', places);
+    renderAdminList('admin-new-list', places.filter(p=>p.isNew));
+  }
+}
+
+// ============================================================
+// RENDER GRIDS
+// ============================================================
+function renderCards(container, list) {
+  if (!list.length) {
+    container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="big">😕</div>Ничего не найдено</div>';
+    return;
+  }
+  container.innerHTML = list.map((p,i) => `
+    <div class="place-card" onclick="openDetail(${p.id})" style="animation-delay:${i*0.05}s">
+      <div class="place-photo">${p.emoji}</div>
+      ${p.isNew ? '<span class="new-badge">NEW</span>' : ''}
+      <div class="place-name">${p.name}</div>
+      <div class="place-meta">${p.district} · ${p.hours}</div>
+    </div>
+  `).join('');
+}
+
+function initMainGrid() {
+  renderCards(document.getElementById('main-grid'), places);
+}
+
+function initNewGrid() {
+  renderCards(document.getElementById('new-grid'), places.filter(p => p.isNew));
+}
+
+function initDistrictsGrid() {
+  const g = document.getElementById('districts-grid');
+  g.innerHTML = districts.map((d,i) => `
+    <div class="district-card" onclick="openDistrict('${d.name}')" style="animation-delay:${i*0.06}s">
+      <div class="district-icon">${d.emoji}</div>
+      <div class="district-name">${d.name}</div>
+    </div>
+  `).join('');
+}
+
+function openDistrict(name) {
+  currentDistrict = name;
+  const filtered = places.filter(p => p.district === name);
+  document.querySelector('#page-districts .section-title').textContent = `📍 ${name}`;
+  // reuse districts page as place list
+  document.getElementById('districts-grid').style.display = 'none';
+
+  // Check if district list already exists
+  let listEl = document.getElementById('district-places-list');
+  if (!listEl) {
+    listEl = document.createElement('div');
+    listEl.id = 'district-places-list';
+    listEl.className = 'places-grid';
+    listEl.style.padding = '0 20px 30px';
+    document.getElementById('page-districts').appendChild(listEl);
+  }
+  listEl.style.display = 'grid';
+  renderCards(listEl, filtered);
+
+  // Change back behavior
+  document.querySelector('#page-districts .home-btn').onclick = () => resetDistricts();
+}
+
+function resetDistricts() {
+  currentDistrict = null;
+  document.querySelector('#page-districts .section-title').textContent = 'Выберите район 📍';
+  document.getElementById('districts-grid').style.display = 'grid';
+  const listEl = document.getElementById('district-places-list');
+  if (listEl) listEl.style.display = 'none';
+  document.querySelector('#page-districts .home-btn').onclick = () => goTo('page-home');
+  goTo('page-home');
+}
+
+// ============================================================
+// DETAIL
+// ============================================================
+function openDetail(id) {
+  const p = places.find(x => x.id === id);
+  if (!p) return;
+  previousPage = document.querySelector('.page.active').id;
+  document.getElementById('detail-photo').textContent = p.emoji;
+  document.getElementById('detail-name').textContent = p.name;
+  document.getElementById('detail-tags').innerHTML = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+  document.getElementById('detail-desc').textContent = p.desc;
+  document.getElementById('detail-info').innerHTML = `
+    <div class="detail-info-row"><span class="info-icon">🕐</span>${p.hours}</div>
+    <div class="detail-info-row"><span class="info-icon">📍</span>${p.district} район</div>
+  `;
+  document.getElementById('detail-back-btn').onclick = () => goTo(previousPage);
+  goTo('page-detail');
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+function doSearch(q) {
+  const g = document.getElementById('search-grid');
+  if (!q.trim()) {
+    g.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div>Начните вводить название</div>';
+    return;
+  }
+  const res = places.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || p.tags.some(t => t.toLowerCase().includes(q.toLowerCase())));
+  renderCards(g, res);
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function doLogin() {
+  const email = document.getElementById('email-input').value.trim();
+  const pass = document.getElementById('pass-input').value.trim();
+  if (email === 'eligaisherzadkyzy@gmail.com' && pass === '772248') {
+    goTo('page-admin');
+  } else if (email && pass) {
+    goTo('page-notadmin');
+  } else {
+    const box = document.getElementById('login-box');
+    box.classList.add('shake');
+    setTimeout(() => box.classList.remove('shake'), 400);
+  }
+}
+
+// Allow Enter key
+document.getElementById('pass-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('email-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ============================================================
+// FILTER MODAL
+// ============================================================
+function openFilter() {
+  document.getElementById('filter-modal').classList.add('open');
+}
+function closeFilter() {
+  document.getElementById('filter-modal').classList.remove('open');
+}
+document.getElementById('filter-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('filter-modal')) closeFilter();
+});
+
+function selectChip(el, group) {
+  document.querySelectorAll(`#chips-${group} .chip`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  activeFilters[group] = el.textContent.trim();
+}
+
+function applyFilter() {
+  let result = [...places];
+
+  if (activeFilters.time) {
+    const t = activeFilters.time;
+    if (t.includes('День')) result = result.filter(p => p.time === 'day');
+    else if (t.includes('Ночь')) result = result.filter(p => p.time === 'night');
+    else if (t.includes('24/7')) result = result.filter(p => p.time === '24/7');
+  }
+
+  if (activeFilters.type) {
+    const t = activeFilters.type;
+    if (t.includes('Еда')) result = result.filter(p => p.type === 'food');
+    else if (t.includes('Развлечения')) result = result.filter(p => p.type === 'entertainment');
+    else if (t.includes('Природа')) result = result.filter(p => p.type === 'nature' || p.type === 'sport');
+    else if (t.includes('Шопинг')) result = result.filter(p => p.type === 'shopping');
+    else if (t.includes('Культура')) result = result.filter(p => p.type === 'culture');
+  }
+
+  if (activeFilters.people) {
+    const n = activeFilters.people;
+    if (!n.includes('+') && !n.includes('Компания')) {
+      const num = parseInt(n);
+      result = result.filter(p => p.people.includes(num));
+    } else if (n.includes('5+') || n.includes('Компания')) {
+      result = result.filter(p => p.people.includes(5));
+    }
+  }
+
+  closeFilter();
+  renderCards(document.getElementById('main-grid'), result);
+  goTo('page-home');
+}
+
+// ============================================================
+// ADMIN MANAGEMENT
+// ============================================================
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach((t,i) => t.classList.toggle('active', (tab==='all'&&i===0)||(tab==='new'&&i===1)));
+  document.getElementById('admin-panel-all').classList.toggle('active', tab==='all');
+  document.getElementById('admin-panel-new').classList.toggle('active', tab==='new');
+  if (tab==='all') renderAdminList('admin-all-list', places);
+  else renderAdminList('admin-new-list', places.filter(p=>p.isNew));
+}
+
+function renderAdminList(containerId, list) {
+  const c = document.getElementById(containerId);
+  if (!list.length) {
+    c.innerHTML = '<div class="empty-state"><div class="big">📭</div>Список пуст</div>';
+    return;
+  }
+  c.innerHTML = list.map((p,i) => `
+    <div class="admin-place-row" id="arow-${p.id}" style="animation-delay:${i*0.04}s">
+      <span class="admin-place-emoji">${p.emoji}</span>
+      <div class="admin-place-info">
+        <div class="admin-place-name">${p.name}</div>
+        <div class="admin-place-sub">${p.district} · ${p.hours}</div>
+      </div>
+      <div class="admin-place-actions">
+        <button class="btn-new-toggle${p.isNew?' is-new':''}" onclick="adminToggleNew(${p.id})" title="Переключить статус новинки">
+          ${p.isNew ? '★ NEW' : '☆ NEW'}
+        </button>
+        <button class="btn-delete" onclick="adminDelete(${p.id})" title="Удалить место">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function adminToggleNew(id) {
+  const p = places.find(x=>x.id===id);
+  if (!p) return;
+  p.isNew = !p.isNew;
+  // refresh both lists
+  renderAdminList('admin-all-list', places);
+  renderAdminList('admin-new-list', places.filter(p=>p.isNew));
+  // refresh public grids
+  initMainGrid();
+  initNewGrid();
+}
+
+function adminDelete(id) {
+  if (!confirm('Удалить это место?')) return;
+  const idx = places.findIndex(x=>x.id===id);
+  if (idx === -1) return;
+  places.splice(idx, 1);
+  renderAdminList('admin-all-list', places);
+  renderAdminList('admin-new-list', places.filter(p=>p.isNew));
+  initMainGrid();
+  initNewGrid();
+}
+
+function adminAddPlace() {
+  const emoji = document.getElementById('a-emoji').value.trim() || '📍';
+  const name  = document.getElementById('a-name').value.trim();
+  const district = document.getElementById('a-district').value;
+  const hours = document.getElementById('a-hours').value.trim() || '10:00–22:00';
+  const type  = document.getElementById('a-type').value || 'entertainment';
+  const time  = document.getElementById('a-time').value || 'day';
+  const desc  = document.getElementById('a-desc').value.trim() || 'Место в Алматы.';
+  const tagsRaw = document.getElementById('a-tags').value.trim();
+  const isNew = document.getElementById('a-isnew').checked;
+
+  if (!name || !district) {
+    // shake the form
+    const f = document.querySelector('.add-form');
+    f.style.outline = '2px solid #e74c3c';
+    setTimeout(()=>f.style.outline='none', 1000);
+    return;
+  }
+
+  const tags = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [district];
+  const newId = places.length ? Math.max(...places.map(p=>p.id)) + 1 : 1;
+
+  places.push({ id:newId, name, emoji, district, tags, desc, hours, time,
+    people:[1,2,3,4,5], type, isNew });
+
+  // clear form
+  ['a-emoji','a-name','a-hours','a-desc','a-tags'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('a-district').value='';
+  document.getElementById('a-type').value='';
+  document.getElementById('a-time').value='day';
+  document.getElementById('a-isnew').checked=false;
+
+  renderAdminList('admin-all-list', places);
+  renderAdminList('admin-new-list', places.filter(p=>p.isNew));
+  initMainGrid();
+  initNewGrid();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+initMainGrid();
+initNewGrid();
+initDistrictsGrid();
+</script>
+</body>
+</html>
