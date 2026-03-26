@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1774519771095" clover="3.2.0">
-  <project timestamp="1774519771095" name="All files">
+<coverage generated="1774520348983" clover="3.2.0">
+  <project timestamp="1774520348983" name="All files">
     <metrics statements="20" coveredstatements="7" conditionals="28" coveredconditionals="4" methods="11" coveredmethods="2" elements="59" coveredelements="13" complexity="0" loc="20" ncloc="20" packages="1" files="1" classes="1"/>
     <file name="filter.js" path="C:\fingering\src\utils\filter.js">
       <metrics statements="20" coveredstatements="7" conditionals="28" coveredconditionals="4" methods="11" coveredmethods="2"/>
