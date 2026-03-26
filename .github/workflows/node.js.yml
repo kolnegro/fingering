@@ -1,28 +1,34 @@
 name: Node.js CI
 
+# Запускать workflow на каждый push и pull request в ветку main
 on:
   push:
-    branches: ["main", "master"]
+    branches: [ main ]
   pull_request:
-    branches: ["main", "master"]
+    branches: [ main ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [20.x]
+
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Клонируем репозиторий
+      - uses: actions/checkout@v3
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      # 2️⃣ Устанавливаем Node.js нужной версии
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: "20"
+          node-version: ${{ matrix.node-version }}
 
+      # 3️⃣ Устанавливаем зависимости проекта
       - name: Install dependencies
         run: npm install
 
+      # 4️⃣ Запускаем Jest тесты с coverage
       - name: Run tests
         run: npm test
-
-      - name: Run coverage
-        run: npm run test:cov
